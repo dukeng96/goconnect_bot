@@ -23,6 +23,23 @@ def now_iso() -> str:
 def create_ticket(doc: Dict[str, Any]) -> None:
     col_tickets.insert_one(doc)
 
+def add_note(tid: str, author: str, content: str) -> None:
+    col_tickets.find_one_and_update(
+        {'id': tid},
+        {
+            '$push': {
+                'notes': {
+                    'author': author,
+                    'content': content,
+                    'at': now_iso()
+                }
+            },
+            '$set': {'updated_at': now_iso()}
+        },
+        return_document=ReturnDocument.AFTER
+    )
+
+
 def add_event(tid: str, actor: str, action: str, note: str = '') -> None:
     col_events.insert_one({
         'ticket_id': tid, 'actor': actor, 'action': action, 'note': note, 'at': now_iso()

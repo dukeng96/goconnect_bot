@@ -110,3 +110,8 @@ Trả JSON một dòng với các khóa: {{ "platform": "web|app|unknown", "os":
 Văn bản: "{text}"
 """
 )
+
+# Thêm vào cuối file (gần các message khác)
+CANCELLED_USER = """
+Em đã hủy phiếu nháp <code>{ticket_id}</code>. Anh/chị có thể bắt đầu lại mô tả sự cố mới, hoặc gõ <b>/start</b> để reset ạ.
+"""
