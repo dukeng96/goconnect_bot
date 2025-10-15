@@ -1,7 +1,7 @@
 import re, json, requests
 from typing import Dict, Any
 from config import logger, LLM_URL, RAG_URL, RAG_BOT_ID
-from messages_config import CLASSIFIER_PROMPT, ENTITY_PROMPT, QNA_BUSY, QNA_NOT_FOUND
+from message_config import CLASSIFIER_PROMPT, ENTITY_PROMPT, QNA_BUSY, QNA_NOT_FOUND
 
 
 def _call_llm(prompt: str) -> str:

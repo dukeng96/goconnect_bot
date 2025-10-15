@@ -30,7 +30,7 @@ MONGO_DB = os.getenv('MONGO_DB', 'goconnect_bot')
 MINIO_SERVICE_URL = os.getenv('MINIO_SERVICE_URL', 'https://voice-storage.vnpt.vn')
 MINIO_ACCESS_KEY = os.getenv('MINIO_ACCESS_KEY', 'texttospeech')
 MINIO_SECRET_KEY = os.getenv('MINIO_SECRET_KEY', 'Text2speechVnptAI@2024')
-MINIO_FOLDER_NAME = os.getenv('MINIO_FOLDER_NAME', 'goconnect')  # bucket
+MINIO_FOLDER_NAME = os.getenv('MINIO_FOLDER_NAME', 'emotion')  # bucket
 MINIO_PUBLIC_HOST = os.getenv('MINIO_PUBLIC_HOST', MINIO_SERVICE_URL)
 MINIO_EXPIRE_TIME = int(os.getenv('MINIO_EXPIRE_TIME', '168')) * 3600  # hours → seconds
 

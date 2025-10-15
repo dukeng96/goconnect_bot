@@ -16,7 +16,7 @@ from db import (
 )
 from llm import classify, extract_entities, rag_answer
 from storage import upload_bytes, guess_content_type
-from formatting import ticket_preview_text, fmt_attachments, html_escape
+from formatting import ticket_preview_text, fmt_attachments, html_escape, fmt_notes
 
 
 def new_ticket_id() -> str:
@@ -47,17 +47,18 @@ async def cmd_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def _forward_to_group(context: ContextTypes.DEFAULT_TYPE, tid: str, src_msg: str, user, ticket_doc):
     meta = ticket_doc.get('meta', {})
     text = GROUP_BUG_TEMPLATE.format(
-        ticket_id=tid, username=(user.username or 'user'), user_id=user.id,
-        text=html_escape(src_msg),  # <-- escape
-        platform=meta.get('platform', 'unknown'),
-        os=meta.get('os', 'unknown'),
-        app_version=meta.get('app_version', 'unknown'),
+        ticket_id=tid,
+        username=(user.username or 'user'),
+        user_id=user.id,
+        text=html_escape(src_msg),
+        platform=meta.get('platform','unknown'),
+        os=meta.get('os','unknown'),
+        app_version=meta.get('app_version','unknown'),
         attachments=fmt_attachments(ticket_doc.get('attachments', [])),
+        notes=fmt_notes(ticket_doc.get('notes', []), limit=6),   # <-- thêm dòng này
         time_utc=datetime.utcnow().strftime('%H:%M:%S UTC')
     )
-    kb = InlineKeyboardMarkup([
-        [InlineKeyboardButton("Đã khắc phục", callback_data=f"fix:{tid}")]
-    ])
+    kb = InlineKeyboardMarkup([[InlineKeyboardButton("Đã khắc phục", callback_data=f"fix:{tid}")]])
     await context.bot.send_message(
         chat_id=INCIDENT_GROUP_ID, text=text, reply_markup=kb,
         disable_web_page_preview=True, parse_mode='HTML'

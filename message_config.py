@@ -42,22 +42,17 @@ QNA_BUSY = "Em xin lỗi, hệ thống hỏi đáp đang bận. Anh/chị vui l�
 QNA_NOT_FOUND = "Em xin lỗi, hiện em chưa tìm được thông tin phù hợp trong kho kiến thức ạ."
 
 # ── Group templates (HTML) ───────────────────────────────────────────────────
-GROUP_BUG_TEMPLATE = (
-    """
+GROUP_BUG_TEMPLATE = """
 <b>🧰 [BUG]</b> <code>{ticket_id}</code>
-
 <b>Từ:</b> @{username} (<code>{user_id}</code>)
-
 <b>Nội dung:</b> {text}
-
 <b>Thiết bị/phiên bản:</b> {platform} | {os} | {app_version}
-
 <b>Đính kèm:</b>
 {attachments}
-
+<b>Ghi chú bổ sung:</b>
+{notes}
 <b>Thời điểm:</b> {time_utc}
 """
-)
 
 GROUP_FIX_SUFFIX = (
     """
