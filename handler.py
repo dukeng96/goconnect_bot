@@ -16,7 +16,7 @@ from db import (
 )
 from llm import classify, extract_entities, rag_answer
 from storage import upload_bytes, guess_content_type
-from formatting import ticket_preview_text, fmt_attachments, html_escape, fmt_notes
+from formatting import ticket_preview_text, fmt_attachments, html_escape, fmt_notes, rag_markdown_to_html
 
 
 def new_ticket_id() -> str:
@@ -187,5 +187,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
 
     # 4) QnA → RAG (giữ Markdown do backend định dạng **bold**)
-    answer = rag_answer(user.id, text)
-    await msg.reply_text(answer, parse_mode='Markdown', disable_web_page_preview=True)
+    answers = rag_answer(user.id, text)
+    for a in answers:
+        answer_html = rag_markdown_to_html(a)
+        await msg.reply_text(answer_html, parse_mode='HTML', disable_web_page_preview=True)

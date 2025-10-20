@@ -1,5 +1,6 @@
 from typing import Dict, Any, List
 from message_config import TICKET_PREVIEW_HEADER, TICKET_PREVIEW_FOOTER
+import re
 
 def html_escape(s: str) -> str:
     if s is None:
@@ -43,3 +44,12 @@ def ticket_preview_text(t: Dict[str, Any]) -> str:
     )
     notes_block = "\n<b>Ghi chú bổ sung:</b>\n" + notes + "\n"
     return base + notes_block + TICKET_PREVIEW_FOOTER
+
+def html_escape_basic(s: str) -> str:
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+def rag_markdown_to_html(s: str) -> str:
+    s = html_escape_basic(s)
+    # convert **bold** -> <b>bold</b>
+    s = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', s)
+    return s

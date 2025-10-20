@@ -1,5 +1,5 @@
 import re, json, requests
-from typing import Dict, Any
+from typing import Dict, Any, List
 from config import logger, LLM_URL, RAG_URL, RAG_BOT_ID
 from message_config import CLASSIFIER_PROMPT, ENTITY_PROMPT, QNA_BUSY, QNA_NOT_FOUND
 
@@ -45,16 +45,31 @@ def extract_entities(text: str) -> Dict[str, str]:
         return default
 
 
-def rag_answer(telegram_id: int, text: str) -> str:
-    payload = { 'bot_id': RAG_BOT_ID, 'sender_id': str(telegram_id), 'logSTT_id': 'DTMF', 'input_channel': 'telegram', 'text': text }
+def rag_answer(telegram_id: int, text: str) -> List[str]:
+    """
+    Gọi RAG và trả về DANH SÁCH các đoạn text (mỗi card_data một đoạn).
+    Nếu lỗi → trả về [QNA_BUSY], nếu rỗng → [QNA_NOT_FOUND].
+    """
+    payload = {
+        "bot_id": RAG_BOT_ID,
+        "sender_id": str(telegram_id),
+        "logSTT_id": "DTMF",
+        "input_channel": "telegram",
+        "text": text,
+    }
     try:
         logger.info("RAG: calling backend for sender=%s", telegram_id)
         r = requests.post(RAG_URL, json=payload, timeout=20)
         r.raise_for_status()
-        j = r.json(); cards = j.get('card_data') or []
-        if cards:
-            return cards[0].get('text') or QNA_NOT_FOUND
+        j = r.json()
+        cards = j.get("card_data") or []
+        texts = [c.get("text", "").strip() for c in cards if isinstance(c, dict)]
+        texts = [t for t in texts if t]  # bỏ rỗng
+        if texts:
+            logger.info("RAG: %d message(s) returned", len(texts))
+            return texts
+        logger.warning("RAG: empty card_data/texts")
+        return [QNA_NOT_FOUND]
     except Exception:
         logger.exception("RAG call failed")
-        return QNA_BUSY
-    return QNA_NOT_FOUND
+        return [QNA_BUSY]
